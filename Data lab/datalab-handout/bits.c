@@ -163,7 +163,7 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return x & (~(1 << 0x1f));
+  return 2;
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -174,7 +174,15 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 2;
+  int res = 0xaa;
+  res = res & x;
+  x = x >> 8;
+  res = res & x;
+  x = x >> 8;
+  res = res & x;
+  x = x >> 8;
+  res = res & x;
+  return !(~((~res) ^ 0xaa));
 }
 /* 
  * negate - return -x 
@@ -184,7 +192,7 @@ int allOddBits(int x) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  return ~x + 1; //补码的性质
 }
 //3
 /* 
