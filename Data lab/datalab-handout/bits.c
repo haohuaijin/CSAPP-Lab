@@ -182,7 +182,7 @@ int allOddBits(int x) {
   res = res & x;
   x = x >> 8;
   res = res & x;
-  return !(~((~res) ^ 0xaa)); //这里为什么不能用或
+  return !(~((~res) ^ 0xaa)); //使用异或，因为res和0xaa不能有重复的部分
 }
 /* 
  * negate - return -x 
@@ -208,7 +208,7 @@ int isAsciiDigit(int x) {
     int res1 = 0x06;
     int res2 = 0x38;
     int res3 = 0x39;
-    res1 = !(~((x >> 3) ^ (~res1)));
+    res1 = !(~((x >> 3) ^ (~res1))); //使用异或，因为x和～res不能有重复部分，让他们一定互补
     res2 = !(~(x ^ (~res2)));
     res3 = !(~(x ^ (~res3)));
     return (res1 | res2 | res3);
@@ -221,7 +221,9 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  return 2;
+  int tOf = (!(!x));
+  int all_0Or1 = ((tOf << 31) >> 31);
+  return (all_0Or1 & y) | ((~all_0Or1) & z); 
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -243,9 +245,15 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  return 2;
+  x |= x >> 16;
+  x |= x >> 8;
+  x |= x >> 4;
+  x |= x >> 2;
+  x |= x >> 1;
+  return (~x) & 1;
 }
-/* howManyBits - return the minimum number of bits required to represent x in
+/* 
+ * howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
  *  Examples: howManyBits(12) = 5
  *            howManyBits(298) = 10
