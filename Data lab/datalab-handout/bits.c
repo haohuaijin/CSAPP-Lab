@@ -182,7 +182,7 @@ int allOddBits(int x) {
   res = res & x;
   x = x >> 8;
   res = res & x;
-  return !(~((~res) ^ 0xaa));
+  return !(~((~res) ^ 0xaa)); //这里为什么不能用或
 }
 /* 
  * negate - return -x 
@@ -205,7 +205,13 @@ int negate(int x) {
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-  return 2;
+    int res1 = 0x06;
+    int res2 = 0x38;
+    int res3 = 0x39;
+    res1 = !(~((x >> 3) ^ (~res1)));
+    res2 = !(~(x ^ (~res2)));
+    res3 = !(~(x ^ (~res3)));
+    return (res1 | res2 | res3);
 }
 /* 
  * conditional - same as x ? y : z 
