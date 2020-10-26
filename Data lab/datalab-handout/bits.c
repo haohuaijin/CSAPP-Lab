@@ -163,7 +163,7 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return 2;
+  return 0; 
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -232,8 +232,22 @@ int conditional(int x, int y, int z) {
  *   Max ops: 24
  *   Rating: 3
  */
+//现在还没有考虑y为tmin时的情况，不够已经通过测试，需要再看看。
+// 发现当y为tmin时，对程序没有影响，内部可以自己处理tmin
+// 例如当x=-1 ， y=tmin时，all_pOn得到一个tmax，正数，所以结果为0。
 int isLessOrEqual(int x, int y) {
-  return 2;
+  int pOnx = !(x >> 31); //正(1)或负(0)
+  int pOny = !(y >> 31);
+ 
+  //处理同正或同负
+  int all_pOn = (x + ((~y) + 1));
+  int less_apOn = !(~(all_pOn >> 31));
+  int equal = !(all_pOn);
+
+  //如果y为正，x为负，tmp=1
+  int tmp = (pOnx^pOny) & (pOny);
+
+  return ((!(pOnx ^ pOny)) & (less_apOn | equal)) | tmp;
 }
 //4
 /* 
@@ -281,7 +295,10 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  return 2;
+  int sign = 0x80000000;
+  int exp  = 0x7f800000;
+  int frac = 0x007fffff;
+
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
