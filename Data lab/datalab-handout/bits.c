@@ -163,7 +163,7 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return 0; 
+  return !((x+1) ^ (~(x+1) +1)) & !(!(~x)); 
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -295,10 +295,20 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  int sign = 0x80000000;
+  //取各个的编码段的常量 
   int exp  = 0x7f800000;
   int frac = 0x007fffff;
-
+  int uf_sign = uf & 0x80000000;
+  int uf_exp = exp & uf;
+  int uf_frac = frac & uf;
+  if(uf_exp == exp){
+    return uf; //the uf is infinite or NAN
+  } else if (uf_exp == 0){
+    return (uf_sign) | (uf << 1);
+  } else {
+    uf_exp += 0x00800000;
+    return uf_sign | uf_exp | uf_frac;
+  }
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -313,7 +323,32 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  return 2;
+  int exp  = 0x7f800000;
+  int frac = 0x007fffff;
+  int uf_sign = uf & 0x80000000;
+  int uf_exp = exp & uf;
+  int uf_frac = frac & uf;
+  if(uf_exp == exp){ //uf is infinite or NAN;
+    return 0x80000000u;
+  } else if (uf_exp == 0){
+    return 0; 
+  } else {
+    int int_exp = (uf_exp >> 23) - 127; //得到指数的大小
+    //超出范围
+    if(int_exp < 0) return 0;
+    if(int_exp > 30) return 0x80000000u;
+    //指数没有超出范围 
+    uf_frac = uf_frac | 0x00800000;
+    if((int_exp-23) > 0){
+      uf_frac = uf_frac << (int_exp-23);
+    } else {
+      uf_frac = uf_frac >> (23-int_exp);
+    }
+    //判断正负
+    if(uf_sign)
+      return ~uf_frac + 1;
+    return uf_frac;
+  }
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -329,5 +364,8 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+  if(x < -126) return 0; //the 2^x is to small.
+  if(x > 128) return 0x7f800000;
+  int exp = (x + 127) << 23;
+  return exp;
 }
