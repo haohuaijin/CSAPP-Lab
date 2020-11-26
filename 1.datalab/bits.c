@@ -382,8 +382,9 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
+  int exp;
   if(x < -126) return 0; //the 2^x is to small.
   if(x > 128) return 0x7f800000;
-  int exp = (x + 127) << 23;
+  exp = (x + 127) << 23;
   return exp;
 }
