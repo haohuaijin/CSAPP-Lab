@@ -197,6 +197,8 @@ void get_filetype(char *filename, char *filetype)
         strcpy(filetype, "image/png");
     else if (strstr(filename, ".jpg"))
         strcpy(filetype, "image/jpeg");
+    else if (strstr(filename, ".ico")) //add ico
+        strcpy(filetype, "image/ico");
     else
         strcpy(filetype, "text/plain");
 }
